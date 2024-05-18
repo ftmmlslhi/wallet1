@@ -14,14 +14,22 @@ export class DepositRepository {
   ) {}
   async create(dto: CreateDepositDto) {
     try {
-      const getFee = await this.feeRepository.getFee();
-      const amountFee = Number(dto.deposit) - Number(getFee.fee);
+      const getFee = (await this.feeRepository.getFee());
+      const CurrentFee = getFee.fee
+      console.log("getFee",getFee,typeof(CurrentFee));
+      console.log("%",(Number(dto.deposit) * Number(getFee.fee)));
+      
+      const FinalAmount = Number(dto.deposit) - (Number(dto.deposit) * Number(getFee.fee));
+      console.log("FinalAmount",FinalAmount);
+      //EDITED
       const res = await this.prisma.transaction.create({
         data: {
-          deposit: amountFee,
+          deposit: dto.deposit,
           transaction_date: new Date(),
           deposit_status: 'submit',
-          account: {
+          currentFee: getFee.fee,
+          finalAmount:FinalAmount,
+          accounts: {
             connect: { id: dto.accountId },
           },
         },
@@ -33,7 +41,17 @@ export class DepositRepository {
   }
 
   async update(TrId: number,transactionUpdateInput: Prisma.transactionUpdateInput,transactionType:string) {
+    console.log("TrId",TrId);
+    
     try {
+      //TODO at first check if the transaction is deposit
+      const transactionType = await this.prisma.transaction.findUnique({
+        where:{
+          id: TrId
+        }
+      })
+      console.log("transactionType",transactionType);
+      
       const res = await this.prisma.transaction.update({
         data: {
           deposit_status: transactionUpdateInput.deposit_status,
@@ -42,16 +60,19 @@ export class DepositRepository {
           id: TrId,
         },
       });
+      console.log("res",res);
+      
       if ((transactionUpdateInput.deposit_status === 'confirm')) {
-        const updatebalanceDEP = await this.userRepository.updatebalanceDEP(
-          res.account_id,
-          res.deposit,
-          transactionType
-        );
-        return {
-          message: 'updated successfully',
-          data: updatebalanceDEP,
-        };
+        //TODO update user balance
+        // const updatebalanceDEP = await this.userRepository.updatebalanceDEP(
+        //   res.account_id,
+        //   res.deposit,
+        //   transactionType
+        // );
+        // return {
+        //   message: 'updated successfully',
+        //   data: updatebalanceDEP,
+        // };
       }
         return {
           message: 'updated successfully',

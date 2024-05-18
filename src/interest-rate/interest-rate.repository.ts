@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { InterestRate } from "./interface/InterestRate.interface";
 import { prismaService } from "prisma/prisma.service";
 import { Prisma, interest_rate } from "@prisma/client";
 import { CreateInterestRateDto } from "./dto/create-interest-rate.dto";

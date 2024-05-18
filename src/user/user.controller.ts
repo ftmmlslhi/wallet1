@@ -12,7 +12,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('auth/signup')
-  signup(@Body() usersCreateInput: Prisma.usersCreateInput) {
+  signup(@Body() usersCreateInput: Prisma.userCreateInput) {
     return this.userService.signup(usersCreateInput);
   }
 

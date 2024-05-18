@@ -4,10 +4,6 @@ export class CreateBankaccountDto {
     @IsString()
     @IsNotEmpty()
     account_number: string
-    // @IsNumber()
-    // @IsString()
-    // @IsNotEmpty()
-    // balance: number | string
     @IsNumber()
     @IsNotEmpty()
     cvv: number
@@ -16,5 +12,5 @@ export class CreateBankaccountDto {
     iban: number
     @IsNumber()
     @IsNotEmpty()
-    user_account: number
+    userId: number
 }

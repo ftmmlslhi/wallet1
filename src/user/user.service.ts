@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client';
 export class UserService {
   constructor(private readonly userRepository:UserRepository){}
 
-  signup(usersCreateInput: Prisma.usersCreateInput) {
+  signup(usersCreateInput: Prisma.userCreateInput) {
     return this.userRepository.signup(usersCreateInput)
   }
 

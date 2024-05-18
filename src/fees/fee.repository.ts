@@ -8,16 +8,17 @@ export class FeeRepository {
     private readonly prisma: prismaService,
   ) { }
   async addFee(createFeeDto: CreateFeeDto) {
+    console.log("createFeeDto",createFeeDto);
+    //EDITED/
     try {
       const newSetting = await this.prisma.sett.create({
         data: {
           fee: createFeeDto.fee,
-          users: {
+          user: {
             connect: { id: createFeeDto.userId },
           },
         },
-      });
-
+      });      
       return newSetting;
     } catch (error) {
       throw new Error(`Failed to create setting fee: ${error.message}`);

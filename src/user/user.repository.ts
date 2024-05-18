@@ -13,7 +13,7 @@ export class UserRepository {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signup(usersInput: Prisma.usersCreateInput) {
+  async signup(usersInput: Prisma.userCreateInput) {
     try {
       const userData = {
         lastName: usersInput.lastName,
@@ -26,7 +26,8 @@ export class UserRepository {
         updated_at: new Date(),
         role: usersInput.role,
       };
-      const user = await this.prisma.users.create({
+      //EDITED/
+      const user = await this.prisma.user.create({
         data: userData,
       });
       return user;
@@ -36,9 +37,10 @@ export class UserRepository {
     }
   }
 
+  //EDITED/
   async signin(userLoginDto: UserLoginDto) {
     try {
-      const user = await this.prisma.users.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: {
           username: userLoginDto.username,
           password: hash('md5', userLoginDto.password),
@@ -71,39 +73,41 @@ export class UserRepository {
     depo: Decimal,
     transactionType: String,
   ) {
-    try {
-      const res = await this.prisma.account.findUnique({
-        where: { id: accountId },
-        include: {
-          user_account: {
-            select: {
-              users: true,
-            },
-          },
-        },
-      });
+  //   try {
+  //     //EDITED checck in duration
+  //     const res = await this.prisma.accounts.findUnique({
+  //       where: { id: accountId },
+  //       include: {
+  //         user: {
+  //           // select: {
+  //           //   id: true,
+  //           // },
+  //         },
+  //       },
+  //     });
 
-      const userId = res.user_account[0].users.id;
-      const currentBalance = res.user_account[0].users.userBalance;
-      const newBalance = Number(currentBalance) + Number(depo);
-      const updateUserId = await this.prisma.users.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          userBalance: newBalance,
-        },
-      });
-      return updateUserId;
-    } catch (e) {
-      console.error('Error in login:', e);
-      throw e;
-    }
+  //     const userId = res.user_account[0].users.id;
+  //     const currentBalance = res.user_account[0].users.userBalance;
+  //     const newBalance = Number(currentBalance) + Number(depo);
+  //     const updateUserId = await this.prisma.user.update({
+  //       where: {
+  //         id: userId,
+  //       },
+  //       data: {
+  //         userBalance: newBalance,
+  //       },
+  //     });
+  //     return updateUserId;
+  //   } catch (e) {
+  //     console.error('Error in login:', e);
+  //     throw e;
+  //   }
   }
 
   async getBalance() {
+    //EDITED/
     try {
-      return await this.prisma.users.findMany({
+      return await this.prisma.user.findMany({
         select: {
           id: true,
           userBalance: true,
@@ -115,11 +119,12 @@ export class UserRepository {
     }
   }
 
-  async getBalanceById(id: number) {
+  async getBalanceById(userid: number) {
     try {
-      const res = await this.prisma.users.findUnique({
+      //EDITED/
+      const res = await this.prisma.user.findUnique({
         where: {
-          id,
+          id: userid,
         },
         select: {
           userBalance: true,
@@ -136,9 +141,10 @@ export class UserRepository {
     }
   }
 
+  //EDITED //check with duration
   async updateAccountBalance(id:number,newBalance : number){
     try{
-      const res = await this.prisma.users.update({
+      const res = await this.prisma.user.update({
         where:{
           id:id,
         },
@@ -161,29 +167,30 @@ export class UserRepository {
     transactionType: String,
   ) {
     try {
-      const res = await this.prisma.account.findUnique({
-        where: { id: accountId },
-        include: {
-          user_account: {
-            select: {
-              users: true,
-            },
-          },
-        },
-      });
+      //EDITED
+      // const res = await this.prisma.accounts.findUnique({
+      //   where: { id: accountId },
+      //   include: {
+      //     user_account: {
+      //       select: {
+      //         users: true,
+      //       },
+      //     },
+      //   },
+      // });
 
-      const userId = res.user_account[0].users.id;
-      const currentBalance = res.user_account[0].users.userBalance;
-      const newBalance = Number(currentBalance) - Number(wid);
-      const updateUserId = await this.prisma.users.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          userBalance: newBalance,
-        },
-      });
-      return updateUserId;
+      // const userId = res.user_account[0].users.id;
+      // const currentBalance = res.user_account[0].users.userBalance;
+      // const newBalance = Number(currentBalance) - Number(wid);
+      // const updateUserId = await this.prisma.users.update({
+      //   where: {
+      //     id: userId,
+      //   },
+      //   data: {
+      //     userBalance: newBalance,
+      //   },
+      // });
+      // return updateUserId;
     } catch (e) {
       console.error('Error in login:', e);
       throw e;

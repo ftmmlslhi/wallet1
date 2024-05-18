@@ -14,14 +14,22 @@ export class WithdrawalRepository {
   ) {}
   async create(createWithdrawalDto: CreateWithdrawalDto) {
     try {      
-      const getFee = await this.feeRepository.getFee();
-      const amountFee = Number(createWithdrawalDto.withdrawal) + Number(getFee.fee);      
+      const getFee = await this.feeRepository.getFee();      
+      const CurrentFee = getFee.fee
+      console.log("getFee",getFee,typeof(CurrentFee));
+      
+      const FinalAmount = Number(createWithdrawalDto.withdrawal) + (Number(createWithdrawalDto.withdrawal) * Number(getFee.fee));
+      console.log("FinalAmount",FinalAmount);
+      //TODO get user balance and check if the balance is - or not
+      // const getuserBalance = await this.prisma.users.
       const res = await this.prisma.transaction.create({
         data: {
-          withdrawal: amountFee,
+          withdrawal: createWithdrawalDto.withdrawal,
           transaction_date: new Date(),
           withdrawal_status: 'submit',
-          account: {
+          currentFee: getFee.fee,
+          finalAmount:FinalAmount,
+          accounts: {
             connect: { id: createWithdrawalDto.accountId },
           },
         },
@@ -34,6 +42,7 @@ export class WithdrawalRepository {
 
   async update(WdId: number,transactionUpdateInput: Prisma.transactionUpdateInput,transactionType:String) {
     try {
+       //TODO update user balance
       const res = await this.prisma.transaction.update({
         data: {
           withdrawal_status: transactionUpdateInput.withdrawal_status,
