@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id                Int                 @id @default(autoincrement())
+  account_number    String              @db.VarChar(20)
+  cvv               Int
+  iban              Int
+  opened_date       DateTime            @db.Date
+  created_at        DateTime            @default(now()) @db.DateTime(0)
+  NightlyBalanceLog NightlyBalanceLog[]
+  transaction       transaction[]
+  user_account      user_account[]
+}
+
+model transaction {
+  id                Int                            @id @default(autoincrement())
+  account_id        Int
+  transaction_date  DateTime                       @default(now()) @db.Timestamp(0)
+  deposit_status    transaction_deposit_status?    @default(submit)
+  deposit           Decimal?                       @default(0.00000) @db.Decimal(15, 5)
+  withdrawal        Decimal?                       @default(0.00000) @db.Decimal(15, 5)
+  withdrawal_status transaction_withdrawal_status? @default(submit)
+  account           account                        @relation(fields: [account_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "transaction_ibfk_1")
+
+  @@index([account_id], map: "account_id")
+}
+
+model user_account {
+  user_id    Int
+  account_id Int
+  users      users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_account_ibfk_1")
+  account    account @relation(fields: [account_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_account_ibfk_2")
+
+  @@id([user_id, account_id])
+  @@index([account_id], map: "account_id")
+}
+
+model users {
+  lastName      String         @db.VarChar(255)
+  firstName     String         @db.VarChar(255)
+  mobile_number String         @db.VarChar(255)
+  id            Int            @id @default(autoincrement())
+  username      String         @unique(map: "username") @db.VarChar(50)
+  email         String         @unique(map: "email") @db.VarChar(100)
+  password      String         @db.VarChar(255)
+  created_at    DateTime?      @default(now()) @db.Timestamp(0)
+  updated_at    DateTime?      @default(now()) @db.Timestamp(0)
+  role          users_role     @default(user)
+  userBalance   Decimal?       @default(0.00) @db.Decimal(15, 2)
+  sett          sett[]
+  user_account  user_account[]
+}
+
+model sett {
+  id      Int     @id @default(autoincrement())
+  fee     Decimal @db.Decimal(10, 0)
+  user_id Int?
+  users   users?  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sett_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model interest_rate {
+  id            Int     @id @default(autoincrement())
+  duration_days Int
+  rate          Decimal @db.Decimal(5, 2)
+}
+
+model NightlyBalanceLog {
+  id            Int      @id @default(autoincrement())
+  accountId     Int
+  loggedBalance Decimal  @db.Decimal(15, 2)
+  logDate       DateTime @default(now()) @db.Timestamp(0)
+  account       account  @relation(fields: [accountId], references: [id])
+
+  @@index([accountId], map: "NightlyBalanceLog_accountId_fkey")
+}
+
+enum users_role {
+  user
+  admin
+}
+
+enum transaction_deposit_status {
+  reject
+  confirm
+  submit
+}
+
+enum transaction_withdrawal_status {
+  reject
+  submit
+  approve
+}
