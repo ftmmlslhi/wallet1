@@ -45,6 +45,7 @@ $ pnpm run start:dev
 $ pnpm run start:prod
 ```
 ## run this commande:
+pnpm i
 pnpm install @prisma/client
 npx prisma migrate dev// if db not existed
 npx prisma db pull //if db is existed
