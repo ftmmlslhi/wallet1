@@ -37,7 +37,6 @@ export class UserRepository {
     }
   }
 
-  //EDITED/
   async signin(userLoginDto: UserLoginDto) {
     try {
       const user = await this.prisma.user.findUnique({
@@ -85,19 +84,18 @@ export class UserRepository {
           id: userId,
         },
         data: {
+          updated_at: new Date(),
           userBalance: newBalance,
         },
       });
-      console.log("updateUserId",updateUserId);
       return updateUserId
     } catch (e) {
-          console.error(e);
-          throw e;
+      console.error(e);
+      throw e;
     }
   }
 
   async getBalance() {
-    //EDITED/
     try {
       return await this.prisma.user.findMany({
         select: {
@@ -113,7 +111,6 @@ export class UserRepository {
 
   async getBalanceById(userid: number) {
     try {
-      //EDITED/
       const res = await this.prisma.user.findUnique({
         where: {
           id: userid,
@@ -133,6 +130,49 @@ export class UserRepository {
     }
   }
 
+  async updatebalanceWID(accountId: number, wid: Decimal, userId: number,) {
+    try {
+      const currentBalance = await this.prisma.user.findUnique({
+        where: {
+          id: userId
+        },
+        select: {
+          userBalance: true
+        }
+      })
+
+      const newBalance = new Decimal(currentBalance.userBalance).minus(wid);
+      console.log(userId, accountId, wid, currentBalance.userBalance, newBalance);
+      const updateByUserId = await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          updated_at: new Date(),
+          userBalance: newBalance,
+        },
+      });
+      console.log("updateByUserId", updateByUserId);
+      return updateByUserId
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
+
+  //EDITED//check in cron job
+  async getUserAccounts(): Promise<any[]> {
+    const results = await this.prisma.user.findMany({
+      select: { 
+        id:true,
+        userBalance : true,
+        updated_at : true
+      } 
+    });
+    
+    return results
+  }
+  
   //EDITED //check with duration
   async updateAccountBalance(id: number, newBalance: number) {
     try {
@@ -151,64 +191,5 @@ export class UserRepository {
       console.log(e)
       throw new Error('Database error occurred while update balance.');
     }
-  }
-
-  async updatebalanceWID(accountId: number,wid: Decimal,userId: number,) {
-   
-      //EDITED
-      try {
-        const currentBalance = await this.prisma.user.findUnique({
-          where: {
-            id: userId
-          },
-          select: {
-            userBalance: true
-          }
-        })
-        
-        const newBalance = new Decimal(currentBalance.userBalance).minus(wid);
-        console.log(userId, accountId, wid,currentBalance.userBalance,newBalance);
-        const updateByUserId = await this.prisma.user.update({
-          where: {
-            id: userId,
-          },
-          data: {
-            userBalance: newBalance,
-          },
-        });
-        console.log("updateByUserId",updateByUserId);
-        return updateByUserId
-      } catch (e) {
-            console.error(e);
-            throw e;
-      }
-      ////////////////////////
-      // const res = await this.prisma.accounts.findUnique({
-      //   where: { id: accountId },
-      //   include: {
-      //     user_account: {
-      //       select: {
-      //         users: true,
-      //       },
-      //     },
-      //   },
-      // });
-
-      // const userId = res.user_account[0].users.id;
-      // const currentBalance = res.user_account[0].users.userBalance;
-      // const newBalance = Number(currentBalance) - Number(wid);
-      // const updateUserId = await this.prisma.users.update({
-      //   where: {
-      //     id: userId,
-      //   },
-      //   data: {
-      //     userBalance: newBalance,
-      //   },
-      // });
-      // return updateUserId;
-    // } catch (e) {
-    //   console.error('Error in login:', e);
-    //   throw e;
-    // }
   }
 }

@@ -1,20 +1,22 @@
 import { Injectable } from "@nestjs/common";
-import { NightlyBalanceLog } from "@prisma/client";
+import { nigthlyBalanceLog } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import { prismaService } from "prisma/prisma.service";
 
-    @Injectable()
-    export class BalanceLogRepository{
-        constructor(private readonly prisma: prismaService) {}
+@Injectable()
+export class BalanceLogRepository {
+  constructor(private readonly prisma: prismaService) { }
+  async saveNightlyBalanceLog(userid: number, userBalance: Decimal, cronRunTimeStamp:number): Promise<nigthlyBalanceLog> {
+    console.log("userid", userid, "userBalance", userBalance,cronRunTimeStamp);
+    const res = await this.prisma.nigthlyBalanceLog.create({
+      data: {
+        userId: userid,
+        balance :userBalance,
+        logTimestamp : new Date(cronRunTimeStamp),
+        created_at : new Date()
+      },
+    });
+    return res;
+  }
 
-        async saveNightlyBalanceLog(accountId: number, loggedBalance: number): Promise<NightlyBalanceLog> {
-            const res = await this.prisma.nightlyBalanceLog.create({
-              data: {
-                accountId,
-                loggedBalance,
-              },
-            });
-            return res;
-            
-          }
-        
-    }
+}

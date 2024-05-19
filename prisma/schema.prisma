@@ -8,16 +8,17 @@ datasource db {
 }
 
 model accounts {
-  id                Int                 @id @default(autoincrement())
-  account_number    String              @db.VarChar(20)
-  cvv               Int
-  iban              Int
-  opened_date       DateTime            @db.Date
-  created_at        DateTime            @default(now()) @db.DateTime(0)
-  NightlyBalanceLog NightlyBalanceLog[]
-  transaction       transaction[]
-  user_id           Int                 // Foreign key field
-  user              user                @relation(fields: [user_id], references: [id])
+  id             Int           @id @default(autoincrement())
+  account_number String        @db.VarChar(20)
+  cvv            Int
+  iban           Int
+  opened_date    DateTime      @db.Date
+  created_at     DateTime      @default(now()) @db.DateTime(0)
+  user_id        Int
+  user           user          @relation(fields: [user_id], references: [id])
+  transaction    transaction[]
+
+  @@index([user_id], map: "accounts_user_id_fkey")
 }
 
 model transaction {
@@ -36,19 +37,20 @@ model transaction {
 }
 
 model user {
-  lastName      String         @db.VarChar(255)
-  firstName     String         @db.VarChar(255)
-  mobile_number String         @db.VarChar(255)
-  id            Int            @id @default(autoincrement())
-  username      String         @unique(map: "username") @db.VarChar(50)
-  email         String         @unique(map: "email") @db.VarChar(100)
-  password      String         @db.VarChar(255)
-  created_at    DateTime?      @default(now()) @db.Timestamp(0)
-  updated_at    DateTime?      @default(now()) @db.Timestamp(0)
-  role          users_role     @default(user)
-  userBalance   Decimal?       @default(0.00) @db.Decimal(15, 2)
-  sett          sett[]
-  accounts      accounts[]     // One-to-many relationship
+  lastName          String              @db.VarChar(255)
+  firstName         String              @db.VarChar(255)
+  mobile_number     String              @db.VarChar(255)
+  id                Int                 @id @default(autoincrement())
+  username          String              @unique(map: "username") @db.VarChar(50)
+  email             String              @unique(map: "email") @db.VarChar(100)
+  password          String              @db.VarChar(255)
+  created_at        DateTime?           @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?           @default(now()) @db.Timestamp(0)
+  role              users_role          @default(user)
+  userBalance       Decimal?            @default(0.00) @db.Decimal(15, 2)
+  accounts          accounts[]
+  nigthlyBalanceLog nigthlyBalanceLog[]
+  sett              sett[]
 }
 
 model sett {
@@ -66,14 +68,15 @@ model interest_rate {
   rate          Decimal @db.Decimal(5, 2)
 }
 
-model NightlyBalanceLog {
-  id            Int      @id @default(autoincrement())
-  accountId     Int
-  loggedBalance Decimal  @db.Decimal(15, 2)
-  logDate       DateTime @default(now()) @db.Timestamp(0)
-  accounts      accounts @relation(fields: [accountId], references: [id])
+model nigthlyBalanceLog {
+  id           Int       @id @default(autoincrement())
+  userId       Int?
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  logTimestamp DateTime  @db.Timestamp(0)
+  balance      Decimal   @db.Decimal(15, 2)
+  user         user?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "nigthlyBalanceLog_ibfk_1")
 
-  @@index([accountId], map: "NightlyBalanceLog_accountId_fkey")
+  @@index([userId], map: "userId")
 }
 
 enum users_role {

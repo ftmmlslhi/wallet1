@@ -10,10 +10,6 @@ export class BankaccountService {
     return this.bankaccountRepository.create(createBankaccountDto);
   }
 
-  getUserAccounts() {
-    return this.bankaccountRepository.getUserAccounts();
-  }
-
   findOne(id: number) {
     return this.bankaccountRepository.findOne(id);
   }
