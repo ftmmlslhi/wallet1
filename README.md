@@ -44,7 +44,11 @@ $ pnpm run start:dev
 # production mode
 $ pnpm run start:prod
 ```
-
+## run this commande:
+pnpm install @prisma/client
+npx prisma migrate dev// if db not existed
+npx prisma db pull //if db is existed
+npx prisma generate //for generate
 ## Test
 
 ```bash
