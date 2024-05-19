@@ -47,7 +47,7 @@ model user {
   created_at        DateTime?           @default(now()) @db.Timestamp(0)
   updated_at        DateTime?           @default(now()) @db.Timestamp(0)
   role              users_role          @default(user)
-  userBalance       Decimal?            @default(0.00) @db.Decimal(15, 2)
+  userBalance       Decimal?            @default(0.00000) @db.Decimal(15, 5)
   accounts          accounts[]
   nigthlyBalanceLog nigthlyBalanceLog[]
   sett              sett[]

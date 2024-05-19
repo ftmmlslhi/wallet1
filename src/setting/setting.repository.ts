@@ -3,13 +3,11 @@ import { prismaService } from 'prisma/prisma.service';
 import { CreateFeeDto } from './dto/create-fee.dto';
 
 @Injectable()
-export class FeeRepository {
+export class SettingRepository {
   constructor(
     private readonly prisma: prismaService,
   ) { }
   async addFee(createFeeDto: CreateFeeDto) {
-    console.log("createFeeDto",createFeeDto);
-    //EDITED/
     try {
       const newSetting = await this.prisma.sett.create({
         data: {

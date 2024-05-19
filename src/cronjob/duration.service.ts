@@ -11,7 +11,7 @@ export class DurationService {
   constructor(private userService: UserService,private readonly interestrateService: InterestRateService, private readonly balanceLogService: BalanceLogService) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  // @Cron(CronExpression.EVERY_10_SECONDS)
+  // @Cron(CfeeronExpression.EVERY_10_SECONDS)
   async calculateAccountDurations(): Promise<void> {
     const now: number = Date.now();
     const cronRunTimeStamp: number = Math.floor(now) 

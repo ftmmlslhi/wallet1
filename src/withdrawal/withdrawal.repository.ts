@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { prismaService } from 'prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { FeeRepository } from 'src/fees/fee.repository';
+import { SettingRepository } from 'src/setting/setting.repository';
 import { UserRepository } from 'src/user/user.repository';
 import { CreateWithdrawalDto } from './dto/create-withdrawal.dto';
 import { Decimal } from '@prisma/client/runtime/library';
@@ -10,15 +10,17 @@ import { Decimal } from '@prisma/client/runtime/library';
 export class WithdrawalRepository {
   constructor(
     private readonly prisma: prismaService,
-    private readonly feeRepository: FeeRepository,
+    private readonly settingRepository: SettingRepository,
     private readonly userRepository: UserRepository,
   ) { }
   async create(createWithdrawalDto: CreateWithdrawalDto) {
     try {
-      const getFee = (await this.feeRepository.getFee());
-      const withdrawal = new Decimal(createWithdrawalDto.withdrawal);
-      const CurrentFee = new Decimal(getFee.fee);
-      const FinalAmount = withdrawal.plus(withdrawal.times(CurrentFee));
+      const getFee = (await this.settingRepository.getFee());
+      const CurrentFee = (getFee.fee).toFixed(5);
+      const withdrawal = createWithdrawalDto.withdrawal.toFixed(5);
+      // const CurrentFee = new Decimal(getFee.fee);
+      // const FinalAmount = withdrawal.plus(withdrawal.times(CurrentFee));
+      const FinalAmount = parseFloat(withdrawal)+(parseFloat(withdrawal) * parseFloat(CurrentFee)) 
       const getbalance = await this.prisma.accounts.findUnique({
         where: {
           id: createWithdrawalDto.accountId

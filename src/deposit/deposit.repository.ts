@@ -1,24 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { prismaService } from 'prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { FeeRepository } from 'src/fees/fee.repository';
+import { SettingRepository } from 'src/setting/setting.repository';
 import { CreateDepositDto } from './dto/create-deposit.dto';
 import { UserRepository } from 'src/user/user.repository';
 import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class DepositRepository {
-    constructor(private readonly prisma: prismaService, private readonly feeRepository: FeeRepository,
+    constructor(private readonly prisma: prismaService, private readonly settingRepository: SettingRepository,
       private readonly userRepository: UserRepository,
     ) { }
   async create(dto: CreateDepositDto) {
     try {
-      const getFee = (await this.feeRepository.getFee());
-      const CurrentFee = getFee.fee
-
-      const deposit = new Decimal(dto.deposit);
-      const fee = new Decimal(CurrentFee);
-      const FinalAmount = deposit.minus(deposit.times(fee));
+      const getFee = (await this.settingRepository.getFee());
+      const CurrentFee = (getFee.fee).toFixed(5);
+      const deposit = dto.deposit.toFixed(5);
+      const FinalAmount = parseFloat(deposit)-(parseFloat(deposit) * parseFloat(CurrentFee))      
       
       const res = await this.prisma.transaction.create({
         data: {

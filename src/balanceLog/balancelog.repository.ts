@@ -7,7 +7,6 @@ import { prismaService } from "prisma/prisma.service";
 export class BalanceLogRepository {
   constructor(private readonly prisma: prismaService) { }
   async saveNightlyBalanceLog(userid: number, userBalance: Decimal, cronRunTimeStamp:number): Promise<nigthlyBalanceLog> {
-    console.log("userid", userid, "userBalance", userBalance,cronRunTimeStamp);
     const res = await this.prisma.nigthlyBalanceLog.create({
       data: {
         userId: userid,

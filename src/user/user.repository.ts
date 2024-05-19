@@ -26,7 +26,6 @@ export class UserRepository {
         updated_at: new Date(),
         role: usersInput.role,
       };
-      //EDITED/
       const user = await this.prisma.user.create({
         data: userData,
       });
@@ -68,7 +67,6 @@ export class UserRepository {
   }
 
   async updatebalanceDEP(accountId: number, userId: number, depo: Decimal) {
-    console.log(userId, accountId, depo);
     try {
       const currentBalance = await this.prisma.user.findUnique({
         where: {
@@ -142,7 +140,6 @@ export class UserRepository {
       })
 
       const newBalance = new Decimal(currentBalance.userBalance).minus(wid);
-      console.log(userId, accountId, wid, currentBalance.userBalance, newBalance);
       const updateByUserId = await this.prisma.user.update({
         where: {
           id: userId,
@@ -152,7 +149,6 @@ export class UserRepository {
           userBalance: newBalance,
         },
       });
-      console.log("updateByUserId", updateByUserId);
       return updateByUserId
     } catch (e) {
       console.error(e);
@@ -160,7 +156,6 @@ export class UserRepository {
     }
   }
 
-  //EDITED//check in cron job
   async getUserAccounts(): Promise<any[]> {
     const results = await this.prisma.user.findMany({
       select: { 
@@ -173,7 +168,6 @@ export class UserRepository {
     return results
   }
   
-  //EDITED //check with duration
   async updateAccountBalance(id: number, newBalance: number) {
     try {
       const res = await this.prisma.user.update({

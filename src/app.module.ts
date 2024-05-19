@@ -2,11 +2,9 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtModule } from '@nestjs/jwt';
-import { env } from 'process';
 import { UserModule } from './user/user.module';
-import { FeesModule } from './fees/fees.module';
+import { SettingModule } from './setting/setting.module';
 import { BankaccountModule } from './bankaccount/bankaccount.module';
-// import { TransactionModule } from './transaction/transaction.module';
 import { InterestRateModule } from './interest-rate/interest-rate.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BalanceLogmodule } from './balanceLog/balancelog.module';
@@ -17,10 +15,11 @@ import { DurationService } from './cronjob/duration.service';
 @Module({
   imports: [
     UserModule,
-    FeesModule,
+    SettingModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '600s' },
     }),
     BankaccountModule,
     InterestRateModule,
