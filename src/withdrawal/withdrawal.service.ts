@@ -11,8 +11,8 @@ export class WithdrawalService {
     return this.withdrawalRepository.create(createWithdrawalDto)
   }
 
-  update(id: number, withdravalUpdateInput: Prisma.transactionUpdateInput,transactionType:String) {
-    return this.withdrawalRepository.update(id,withdravalUpdateInput,transactionType)
+  update(id: number, withdravalUpdateInput: Prisma.transactionUpdateInput) {
+    return this.withdrawalRepository.update(id,withdravalUpdateInput)
   }
 
 }

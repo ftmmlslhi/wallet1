@@ -11,7 +11,7 @@ export class DepositService {
     return this.depositRepository.create(createDepositDto);
   }
 
-  update(TrId: number, transactionUpdateInput: Prisma.transactionUpdateInput,transactionType:string) {
-    return this.depositRepository.update(TrId,transactionUpdateInput,transactionType);
+  update(TrId: number, transactionUpdateInput: Prisma.transactionUpdateInput) {
+    return this.depositRepository.update(TrId,transactionUpdateInput);
   }
 }

@@ -18,7 +18,6 @@ export class WithdrawalController {
   @Put('admin/withdrawal/:id/approve')
   @Roles(Role.Admin)
   update(@Param('id') id: string, @Body() withdravalUpdateInput: Prisma.transactionUpdateInput) {
-    const transactionType = "withdrawal"
-    return this.withdrawalService.update(+id, withdravalUpdateInput,transactionType);
+    return this.withdrawalService.update(+id, withdravalUpdateInput);
   }
 }

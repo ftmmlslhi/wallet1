@@ -11,7 +11,7 @@ export class UserRepository {
   constructor(
     private readonly prisma: prismaService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signup(usersInput: Prisma.userCreateInput) {
     try {
@@ -68,40 +68,32 @@ export class UserRepository {
     }
   }
 
-  async updatebalanceDEP(
-    accountId: number,
-    depo: Decimal,
-    transactionType: String,
-  ) {
-  //   try {
-  //     //EDITED checck in duration
-  //     const res = await this.prisma.accounts.findUnique({
-  //       where: { id: accountId },
-  //       include: {
-  //         user: {
-  //           // select: {
-  //           //   id: true,
-  //           // },
-  //         },
-  //       },
-  //     });
-
-  //     const userId = res.user_account[0].users.id;
-  //     const currentBalance = res.user_account[0].users.userBalance;
-  //     const newBalance = Number(currentBalance) + Number(depo);
-  //     const updateUserId = await this.prisma.user.update({
-  //       where: {
-  //         id: userId,
-  //       },
-  //       data: {
-  //         userBalance: newBalance,
-  //       },
-  //     });
-  //     return updateUserId;
-  //   } catch (e) {
-  //     console.error('Error in login:', e);
-  //     throw e;
-  //   }
+  async updatebalanceDEP(accountId: number, userId: number, depo: Decimal) {
+    console.log(userId, accountId, depo);
+    try {
+      const currentBalance = await this.prisma.user.findUnique({
+        where: {
+          id: userId
+        },
+        select: {
+          userBalance: true
+        }
+      })
+      const newBalance = new Decimal(currentBalance.userBalance).plus(depo);
+      const updateUserId = await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          userBalance: newBalance,
+        },
+      });
+      console.log("updateUserId",updateUserId);
+      return updateUserId
+    } catch (e) {
+          console.error(e);
+          throw e;
+    }
   }
 
   async getBalance() {
@@ -142,32 +134,55 @@ export class UserRepository {
   }
 
   //EDITED //check with duration
-  async updateAccountBalance(id:number,newBalance : number){
-    try{
+  async updateAccountBalance(id: number, newBalance: number) {
+    try {
       const res = await this.prisma.user.update({
-        where:{
-          id:id,
+        where: {
+          id: id,
         },
-        data:{
-          userBalance:newBalance
+        data: {
+          userBalance: newBalance
         }
       })
       console.log("update successfully");
       return res
     }
-    catch(e){
+    catch (e) {
       console.log(e)
       throw new Error('Database error occurred while update balance.');
     }
-}
+  }
 
-  async updatebalanceWID(
-    accountId: number,
-    wid: Decimal,
-    transactionType: String,
-  ) {
-    try {
+  async updatebalanceWID(accountId: number,wid: Decimal,userId: number,) {
+   
       //EDITED
+      try {
+        const currentBalance = await this.prisma.user.findUnique({
+          where: {
+            id: userId
+          },
+          select: {
+            userBalance: true
+          }
+        })
+        
+        const newBalance = new Decimal(currentBalance.userBalance).minus(wid);
+        console.log(userId, accountId, wid,currentBalance.userBalance,newBalance);
+        const updateByUserId = await this.prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            userBalance: newBalance,
+          },
+        });
+        console.log("updateByUserId",updateByUserId);
+        return updateByUserId
+      } catch (e) {
+            console.error(e);
+            throw e;
+      }
+      ////////////////////////
       // const res = await this.prisma.accounts.findUnique({
       //   where: { id: accountId },
       //   include: {
@@ -191,9 +206,9 @@ export class UserRepository {
       //   },
       // });
       // return updateUserId;
-    } catch (e) {
-      console.error('Error in login:', e);
-      throw e;
-    }
+    // } catch (e) {
+    //   console.error('Error in login:', e);
+    //   throw e;
+    // }
   }
 }

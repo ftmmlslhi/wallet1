@@ -22,7 +22,6 @@ export class DepositController {
   @Put('admin/deposits/:id/confirm')
   @Roles(Role.Admin)
   update(@Param('id') id: string, @Body() transactionUpdateInput: Prisma.transactionUpdateInput) {
-    const transactionType = "deposit"
-    return this.depositService.update(+id, transactionUpdateInput,transactionType);
+    return this.depositService.update(+id, transactionUpdateInput);
   }
 }
